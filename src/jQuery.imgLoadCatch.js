@@ -1,5 +1,5 @@
 /**
- * jQuery.imgLoadCatch.js v0.1.2
+ * jQuery.imgLoadCatch.js v0.1.3
  * https://github.com/TevinLi/imgloadcatch
  *
  * Copyright 2015, Tevin Li
@@ -22,7 +22,7 @@
                 countIMG: 0,
                 queImg: [],
                 queBg: [],
-                state: [false, false],
+                state: [true, true],
                 disTag: ['br', 'hr', 'script', 'code', 'del', 'embed', 'frame', 'frameset', 'iframe', 'link',
                     'style', 'object', 'pre', 'video', 'wbr', 'xmp']
             };
@@ -49,6 +49,7 @@
         if (this.options.deep == 'img') {
             for (var i = 0, len1 = nodes.length; i < len1; i++) {
                 if (nodes[i].tagName.toLowerCase() == 'img') {
+                    this.config.state[0] = false;
                     this.config.queImg.push(nodes[i]);
                     this.config.total++;
                 }
@@ -62,11 +63,13 @@
                     continue;
                 }
                 if (nodes[j].tagName.toLowerCase() == 'img') {
+                    this.config.state[0] = false;
                     this.config.queImg.push(nodes[j]);
                     this.config.total++;
                 } else {
                     var bgImg = this.getBackgroundImage(nodes[j]);
                     if (bgImg != 'none') {
+                        this.config.state[1] = false;
                         var temp = new Image();
                         temp.src = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '');
                         this.config.queBg.push(temp);
