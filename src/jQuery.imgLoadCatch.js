@@ -1,5 +1,5 @@
 /**
- * jQuery.imgLoadCatch.js v0.1.3
+ * jQuery.imgLoadCatch.js v0.1.6
  * https://github.com/TevinLi/imgloadcatch
  *
  * Copyright 2015, Tevin Li
@@ -20,6 +20,7 @@
                 total: 0,
                 count: 0,
                 countIMG: 0,
+                countBg: 0,
                 queImg: [],
                 queBg: [],
                 state: [true, true],
@@ -69,11 +70,21 @@
                 } else {
                     var bgImg = this.getBackgroundImage(nodes[j]);
                     if (bgImg != 'none') {
-                        this.config.state[1] = false;
-                        var temp = new Image();
-                        temp.src = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '');
-                        this.config.queBg.push(temp);
-                        this.config.total++;
+                        var bgRepeated = false;
+                        var bgSrc = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '');
+                        for (var k = 0; k < this.config.queBg.length; k++) {
+                            if (bgSrc == this.config.queBg[k].src) {
+                                bgRepeated = true;
+                                break;
+                            }
+                        }
+                        if (!bgRepeated) {
+                            this.config.state[1] = false;
+                            var temp = new Image();
+                            temp.src = bgSrc;
+                            this.config.queBg.push(temp);
+                            this.config.total++;
+                        }
                     }
                 }
             }
@@ -104,9 +115,10 @@
         for (var i = 0; i < this.config.queBg.length; i++) {
             this.imgLoad(this.config.queBg[i], function () {
                 that.config.count++;
+                that.config.countBg++;
                 var percent = parseInt(that.config.count / that.config.total * 100);
                 that.options.step(percent, that.config.total, that.config.count);
-                if (that.config.count == that.config.total) {
+                if (that.config.countBg == that.config.queBg.length) {
                     that.config.state[1] = true;
                     that.end();
                 }
