@@ -1,5 +1,5 @@
 /**
- * jQuery.imgLoadCatch.js v0.1.6
+ * jQuery.imgLoadCatch.js v0.1.7
  * https://github.com/TevinLi/imgloadcatch
  *
  * Copyright 2015, Tevin Li
@@ -49,7 +49,7 @@
         var nodes = document.body.getElementsByTagName('*');
         if (this.options.deep == 'img') {
             for (var i = 0, len1 = nodes.length; i < len1; i++) {
-                if (nodes[i].tagName.toLowerCase() == 'img') {
+                if (nodes[i].tagName.toLowerCase() == 'img' && nodes[i].getAttribute('no-catch') === null) {
                     this.config.state[0] = false;
                     this.config.queImg.push(nodes[i]);
                     this.config.total++;
@@ -63,7 +63,7 @@
                 } else if (nodes[j].tagName.toLowerCase() == 'input' && (nodes[j].type == 'radio' || nodes[j].type == 'checkbox')) {
                     continue;
                 }
-                if (nodes[j].tagName.toLowerCase() == 'img') {
+                if (nodes[j].tagName.toLowerCase() == 'img' && nodes[j].getAttribute('no-catch') === null) {
                     this.config.state[0] = false;
                     this.config.queImg.push(nodes[j]);
                     this.config.total++;
