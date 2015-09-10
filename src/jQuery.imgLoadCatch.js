@@ -193,7 +193,8 @@
             callback(false);
             img.onload = null;
             img.onerror = null;
-            throw new Error('Can\'t load ' + words + ': "' + src + '"');
+            var err = 'Can\'t load ' + words + ': "' + src + '"';
+            throw new Error(err);
         };
         img.src = src;
     };
