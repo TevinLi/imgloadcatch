@@ -32,7 +32,7 @@ loading是不是已经finish了，让数据说了算！
 	});
 
 插件的使用是非常简单的，无需任何html上的改动，也不需要任何class标记  
-仅需要在jQuery ready后配置插件，并设置percent百分比输出和完成功能，即可完成全部功能
+仅需要在jQuery ready后配置插件，并设置percent百分比输出和完成，即可完成全部功能
 
 ### 参数详情 ###
 
@@ -63,6 +63,13 @@ loading是不是已经finish了，让数据说了算！
 	<img no-catch src="space.gif">
 
 
-
 ## Demo ##
 [http://code.xf09.net/imgloadcatch/demo/](http://code.xf09.net/imgloadcatch/demo/index.html "http://code.xf09.net/imgloadcatch/demo/index.html")
+
+## 更新说明 ##
+
+### v 0.2.1 ###
+优化错误处理方式，为开发过程提供便利
+当图片明确结果为出错后，仅抛出一个错误，不再会卡住loading百分比结束，抛错是为了给开发使用，调试好后仍然是全部加载完成
+抛错将给出错误加载信息
+

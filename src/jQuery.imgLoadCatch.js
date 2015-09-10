@@ -1,5 +1,5 @@
 /**
- * jQuery.imgLoadCatch.js v0.1.7
+ * jQuery.imgLoadCatch.js v0.2.1
  * https://github.com/TevinLi/imgloadcatch
  *
  * Copyright 2015, Tevin Li
@@ -17,13 +17,25 @@
     Catch = (function () {
         return function (opt) {
             this.config = {
+                //总图片数
                 total: 0,
+                //已处理计数
                 count: 0,
+                //已处理img计数
                 countIMG: 0,
+                //已处理bg计数
                 countBg: 0,
-                queImg: [],
-                queBg: [],
+                //img错误计数
+                imgError: 0,
+                //img错误计数
+                bgError: 0,
+                //是否完成状态
                 state: [true, true],
+                //img标签列队
+                queImg: [],
+                //背景列队
+                queBg: [],
+                //免检测标签
                 disTag: ['br', 'hr', 'script', 'code', 'del', 'embed', 'frame', 'frameset', 'iframe', 'link',
                     'style', 'object', 'pre', 'video', 'wbr', 'xmp']
             };
@@ -43,6 +55,7 @@
         };
     })();
 
+    //获取所有图片，创建列队
     Catch.prototype.init = function () {
         var that = this;
         this.options.start();
@@ -51,7 +64,7 @@
             for (var i = 0, len1 = nodes.length; i < len1; i++) {
                 if (nodes[i].tagName.toLowerCase() == 'img' && nodes[i].getAttribute('no-catch') === null) {
                     this.config.state[0] = false;
-                    this.config.queImg.push(nodes[i]);
+                    this.config.queImg.push(nodes[i].src);
                     this.config.total++;
                 }
             }
@@ -65,7 +78,7 @@
                 }
                 if (nodes[j].tagName.toLowerCase() == 'img' && nodes[j].getAttribute('no-catch') === null) {
                     this.config.state[0] = false;
-                    this.config.queImg.push(nodes[j]);
+                    this.config.queImg.push(nodes[j].src);
                     this.config.total++;
                 } else {
                     var bgImg = this.getBackgroundImage(nodes[j]);
@@ -73,16 +86,14 @@
                         var bgRepeated = false;
                         var bgSrc = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '');
                         for (var k = 0; k < this.config.queBg.length; k++) {
-                            if (bgSrc == this.config.queBg[k].src) {
+                            if (bgSrc == this.config.queBg[k]) {
                                 bgRepeated = true;
                                 break;
                             }
                         }
                         if (!bgRepeated) {
                             this.config.state[1] = false;
-                            var temp = new Image();
-                            temp.src = bgSrc;
-                            this.config.queBg.push(temp);
+                            this.config.queBg.push(bgSrc);
                             this.config.total++;
                         }
                     }
@@ -93,12 +104,14 @@
         }
     };
 
+    //监听img标签列队
     Catch.prototype.listenIMG = function () {
         var that = this;
         for (var i = 0; i < this.config.queImg.length; i++) {
-            this.imgLoad(this.config.queImg[i], function () {
+            this.imgLoad(this.config.queImg[i], function (state) {
                 that.config.count++;
                 that.config.countIMG++;
+                that.config.imgError += state ? 0 : 1;
                 var percent = parseInt(that.config.count / that.config.total * 100);
                 that.options.step(percent, that.config.total, that.config.count);
                 if (that.config.countIMG == that.config.queImg.length) {
@@ -106,55 +119,86 @@
                     that.config.state[0] = true;
                     that.end();
                 }
-            });
+            }, 'img');
         }
     };
 
+    //监听css背景列队
     Catch.prototype.listenBg = function () {
         var that = this;
         for (var i = 0; i < this.config.queBg.length; i++) {
-            this.imgLoad(this.config.queBg[i], function () {
+            this.imgLoad(this.config.queBg[i], function (state) {
                 that.config.count++;
                 that.config.countBg++;
+                that.config.bgError += state ? 0 : 1;
                 var percent = parseInt(that.config.count / that.config.total * 100);
                 that.options.step(percent, that.config.total, that.config.count);
                 if (that.config.countBg == that.config.queBg.length) {
                     that.config.state[1] = true;
                     that.end();
                 }
-            });
+            }, 'bg');
         }
     };
 
+    //处理完成
     Catch.prototype.end = function () {
         var that = this;
+        var end = function () {
+            setTimeout(function () {
+                that.options.finish({
+                    total: that.config.total,
+                    count: that.config.count,
+                    countError: that.config.imgError + that.config.bgError,
+                    countSuccess: that.config.count - (that.config.imgError + that.config.bgError),
+                    imgTag: that.config.countIMG,
+                    imgTagError: that.config.imgError,
+                    imgTagSuccess: that.config.countIMG - that.config.imgError,
+                    cssBg: that.config.countBg,
+                    cssBgError: that.config.bgError,
+                    cssBgSuccess: that.config.countBg - that.config.bgError
+                });
+            }, 100);
+        };
         if (this.options.deep == 'img') {
             if (this.config.state[0]) {
-                setTimeout(function () {
-                    that.options.finish();
-                }, 100);
+                end();
             }
         } else if (this.options.deep == 'all') {
             if (this.config.state[0] && this.config.state[1]) {
                 this.config.queBg = [];
-                setTimeout(function () {
-                    that.options.finish();
-                }, 100);
+                end();
             }
         }
     };
 
-    Catch.prototype.imgLoad = function (img, callback) {
-        if (img.complete) {
-            callback();
+    //加载
+    Catch.prototype.imgLoad = function (src, callback, type) {
+        var img = new Image(),
+            words;
+        if (type == 'img') {
+            words = '<img> src-url'
         } else {
-            img.onload = function () {
-                callback();
-                img.onload = null;
-            };
+            words = 'css background-image';
+            if (src.indexOf('"') >= 0) {
+                src = src.replace(/\"/g, '');
+            }
         }
+        img.onload = function () {
+            callback(true);
+            img.onload = null;
+            img.onerror = null;
+        };
+        img.onerror = function () {
+            callback(false);
+            img.onload = null;
+            img.onerror = null;
+            throw new Error('Can\'t load ' + words + ': "' + src + '"');
+        };
+        img.src = src;
     };
 
+    //免检测判断
     Catch.prototype.isDisTag = function (tagName) {
         var tag = tagName.toLowerCase();
         var re = false;
@@ -167,6 +211,7 @@
         return re;
     };
 
+    //获取css背景
     Catch.prototype.getBackgroundImage = function (node) {
         if (document.defaultView && document.defaultView.getComputedStyle) {
             return document.defaultView.getComputedStyle(node, null).backgroundImage;
