@@ -1,5 +1,5 @@
 /**
- * jQuery.imgLoadCatch.js v0.2.1
+ * jQuery.imgLoadCatch.js v0.2.2
  * https://github.com/TevinLi/imgloadcatch
  *
  * Copyright 2015, Tevin Li
@@ -17,25 +17,25 @@
     Catch = (function () {
         return function (opt) {
             this.config = {
-                //×ÜÍ¼Æ¬Êı
+                //æ€»å›¾ç‰‡æ•°
                 total: 0,
-                //ÒÑ´¦Àí¼ÆÊı
+                //å·²å¤„ç†è®¡æ•°
                 count: 0,
-                //ÒÑ´¦Àíimg¼ÆÊı
+                //å·²å¤„ç†imgè®¡æ•°
                 countIMG: 0,
-                //ÒÑ´¦Àíbg¼ÆÊı
+                //å·²å¤„ç†bgè®¡æ•°
                 countBg: 0,
-                //img´íÎó¼ÆÊı
+                //imgé”™è¯¯è®¡æ•°
                 imgError: 0,
-                //img´íÎó¼ÆÊı
+                //imgé”™è¯¯è®¡æ•°
                 bgError: 0,
-                //ÊÇ·ñÍê³É×´Ì¬
+                //æ˜¯å¦å®ŒæˆçŠ¶æ€
                 state: [true, true],
-                //img±êÇ©ÁĞ¶Ó
+                //imgæ ‡ç­¾åˆ—é˜Ÿ
                 queImg: [],
-                //±³¾°ÁĞ¶Ó
+                //èƒŒæ™¯åˆ—é˜Ÿ
                 queBg: [],
-                //Ãâ¼ì²â±êÇ©
+                //å…æ£€æµ‹æ ‡ç­¾
                 disTag: ['br', 'hr', 'script', 'code', 'del', 'embed', 'frame', 'frameset', 'iframe', 'link',
                     'style', 'object', 'pre', 'video', 'wbr', 'xmp']
             };
@@ -55,7 +55,7 @@
         };
     })();
 
-    //»ñÈ¡ËùÓĞÍ¼Æ¬£¬´´½¨ÁĞ¶Ó
+    //è·å–æ‰€æœ‰å›¾ç‰‡ï¼Œåˆ›å»ºåˆ—é˜Ÿ
     Catch.prototype.init = function () {
         var that = this;
         this.options.start();
@@ -75,6 +75,8 @@
                     continue;
                 } else if (nodes[j].tagName.toLowerCase() == 'input' && (nodes[j].type == 'radio' || nodes[j].type == 'checkbox')) {
                     continue;
+                } else if (nodes[j].getAttribute('no-catch') !== null) {
+                    continue;
                 }
                 if (nodes[j].tagName.toLowerCase() == 'img' && nodes[j].getAttribute('no-catch') === null) {
                     this.config.state[0] = false;
@@ -84,7 +86,7 @@
                     var bgImg = this.getBackgroundImage(nodes[j]);
                     if (bgImg != 'none') {
                         var bgRepeated = false;
-                        var bgSrc = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '');
+                        var bgSrc = bgImg.match(/\([^\)]+\)/g)[0].replace(/\(|\)/g, '').replace(/^\s+|\s+$/g,"");
                         for (var k = 0; k < this.config.queBg.length; k++) {
                             if (bgSrc == this.config.queBg[k]) {
                                 bgRepeated = true;
@@ -104,7 +106,7 @@
         }
     };
 
-    //¼àÌıimg±êÇ©ÁĞ¶Ó
+    //ç›‘å¬imgæ ‡ç­¾åˆ—é˜Ÿ
     Catch.prototype.listenIMG = function () {
         var that = this;
         for (var i = 0; i < this.config.queImg.length; i++) {
@@ -123,7 +125,7 @@
         }
     };
 
-    //¼àÌıcss±³¾°ÁĞ¶Ó
+    //ç›‘å¬cssèƒŒæ™¯åˆ—é˜Ÿ
     Catch.prototype.listenBg = function () {
         var that = this;
         for (var i = 0; i < this.config.queBg.length; i++) {
@@ -141,7 +143,7 @@
         }
     };
 
-    //´¦ÀíÍê³É
+    //å¤„ç†å®Œæˆ
     Catch.prototype.end = function () {
         var that = this;
         var end = function () {
@@ -172,7 +174,7 @@
         }
     };
 
-    //¼ÓÔØ
+    //åŠ è½½
     Catch.prototype.imgLoad = function (src, callback, type) {
         var img = new Image(),
             words;
@@ -199,7 +201,7 @@
         img.src = src;
     };
 
-    //Ãâ¼ì²âÅĞ¶Ï
+    //å…æ£€æµ‹åˆ¤æ–­
     Catch.prototype.isDisTag = function (tagName) {
         var tag = tagName.toLowerCase();
         var re = false;
@@ -212,7 +214,7 @@
         return re;
     };
 
-    //»ñÈ¡css±³¾°
+    //è·å–cssèƒŒæ™¯
     Catch.prototype.getBackgroundImage = function (node) {
         if (document.defaultView && document.defaultView.getComputedStyle) {
             return document.defaultView.getComputedStyle(node, null).backgroundImage;
