@@ -58,9 +58,10 @@ loading是不是已经finish了，让数据说了算！
 
 页面参数：
 
-**no-catch**：对于某些特殊的img元素，如果不想加入加载捕获列队，使用此属性标记即可:
+**no-catch**：对于某些特殊的img元素或背景图片(例如渐变色填充)，如果不想加入加载捕获列队，使用此属性标记即可:
 
 	<img no-catch src="space.gif">
+	<div no-catch style="background:linear-gradient(red,blue);"></div>
 
 
 ## Demo ##
