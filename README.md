@@ -12,7 +12,7 @@ loading百分比是不是已经100%了，让数据说了算！
 ## 用法
 
 ### 引入script
-```js
+```html
 <script src="../libs/zepto-1.1.6.min.js"></script>
 <script src="../src/jQuery.imgLoadCatch.js"></script>
 ```
@@ -22,15 +22,15 @@ loading百分比是不是已经100%了，让数据说了算！
 ### 使用示例
 ```js
 $(function() {
-	$.imgLoadCatch({
-		deep: 'all',
-		step: function(percent) {
-			console.log(percent + '%');
-		},
-		finish: function() {
-			alert('全部图片加载完成!');
-		}
-	});
+    $.imgLoadCatch({
+        deep: 'all',
+        step: function(percent) {
+            console.log(percent + '%');
+        },
+        finish: function() {
+            alert('全部图片加载完成!');
+        }
+    });
 });
 ```
 
