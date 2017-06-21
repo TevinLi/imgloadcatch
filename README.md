@@ -1,4 +1,4 @@
-# jQuery.imgLoadCatch.js #
+# jQuery.imgLoadCatch.js
 
 一款用于**自动捕获网页图片并进行加载进度计算**的插件
 
@@ -6,35 +6,38 @@
 这样的结果是，有时候因为网络信号欠佳，100%后不能如期关闭loading而需要一定时间等待，甚至如果onload卡住，页面将停在100%无法打开，这是一种很糟糕的体验
 
 使用此插件后，这种情况即成为过去式，插件将自动捕获网页上所有的图片，甚至包括所有外链css文件上嵌入的背景图片，然后监听这些图片的加载度变化  
-loading是不是已经finish了，让数据说了算！
+loading百分比是不是已经100%了，让数据说了算！
 
 
-## 用法 ##
+## 用法
 
-### 引入script ###
-	<script src="../libs/zepto-1.1.6.min.js"></script>
-	<script src="../src/jQuery.imgLoadCatch.js"></script>
+### 引入script
+```js
+<script src="../libs/zepto-1.1.6.min.js"></script>
+<script src="../src/jQuery.imgLoadCatch.js"></script>
+```
 
 文件需要依赖jQuery，当然zepto也是可以的，然后再引入插件本身
 
-### 使用示例 ###
-
-	$(function() {
-		$.imgLoadCatch({
-			deep: 'all',
-			step: function(percent) {
-				console.log(percent + '%');
-			},
-			finish: function() {
-				alert('全部图片加载完成!');
-			}
-		});
+### 使用示例
+```js
+$(function() {
+	$.imgLoadCatch({
+		deep: 'all',
+		step: function(percent) {
+			console.log(percent + '%');
+		},
+		finish: function() {
+			alert('全部图片加载完成!');
+		}
 	});
+});
+```
 
 插件的使用是非常简单的，无需任何html上的改动，也不需要任何class标记  
 仅需要在jQuery ready后配置插件，并设置percent百分比输出和完成，即可完成全部功能
 
-### 参数详情 ###
+### 参数详情
 
 当然，肯定有更详细的js参数配置，以提供我们不同需求的开发：
 
@@ -59,18 +62,11 @@ loading是不是已经finish了，让数据说了算！
 页面参数：
 
 **no-catch**：对于某些特殊的img元素或背景图片(例如渐变色填充)，如果不想加入加载捕获列队，使用此属性标记即可:
+```html
+<img no-catch src="space.gif">
+<div no-catch style="background:linear-gradient(red,blue);"></div>
+```
 
-	<img no-catch src="space.gif">
-	<div no-catch style="background:linear-gradient(red,blue);"></div>
-
-
-## Demo ##
-[http://code.xf09.net/imgloadcatch/demo/](http://code.xf09.net/imgloadcatch/demo/index.html "http://code.xf09.net/imgloadcatch/demo/index.html")
-
-## 更新说明 ##
-
-### v 0.2.1 ###
-优化错误处理方式，为开发过程提供便利
-当图片明确结果为出错后，仅抛出一个错误，不再会卡住loading百分比结束。抛错不是略过，而是方便开发，调试好后仍然是全部加载完成
-抛错将给出错误加载信息
+## Demo
+[https://tevinli.github.io/imgloadcatch/index.html](https://tevinli.github.io/imgloadcatch/index.html "imgLoadCatch demo")
 
